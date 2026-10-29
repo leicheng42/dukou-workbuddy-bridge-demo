@@ -4,9 +4,18 @@ on:
   push:
     tags:
       - "v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag, for example v0.1.1"
+        required: true
+        type: string
 
 permissions:
   contents: write
+
+env:
+  RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
 
 jobs:
   release:
@@ -32,18 +41,18 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if gh release view "${GITHUB_REF_NAME}" >/dev/null 2>&1; then
-            gh release upload "${GITHUB_REF_NAME}" \
+          if gh release view "${RELEASE_TAG}" >/dev/null 2>&1; then
+            gh release upload "${RELEASE_TAG}" \
               release/*.dmg \
               release/*.zip \
               release/SHA256SUMS.txt \
               --clobber
-            gh release edit "${GITHUB_REF_NAME}" --draft=false
+            gh release edit "${RELEASE_TAG}" --draft=false
           else
-            gh release create "${GITHUB_REF_NAME}" \
+            gh release create "${RELEASE_TAG}" \
               release/*.dmg \
               release/*.zip \
               release/SHA256SUMS.txt \
               --generate-notes \
-              --title "Relay Chat Demo ${GITHUB_REF_NAME}"
+              --title "Relay Chat Demo ${RELEASE_TAG}"
           fi
