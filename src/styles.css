@@ -153,6 +153,10 @@ button:disabled {
   background: #52c95f;
 }
 
+.app-shell.is-desktop .window-controls {
+  visibility: hidden;
+}
+
 .sidebar__brand {
   display: flex;
   align-items: center;
@@ -439,6 +443,15 @@ button:disabled {
   background: rgba(250, 249, 246, 0.8);
   border-bottom: 1px solid var(--line);
   backdrop-filter: blur(18px);
+}
+
+.app-shell.is-desktop .topbar {
+  -webkit-app-region: drag;
+}
+
+.app-shell.is-desktop .topbar button,
+.app-shell.is-desktop .topbar a {
+  -webkit-app-region: no-drag;
 }
 
 .topbar__breadcrumb {
@@ -1075,17 +1088,24 @@ button:disabled {
 .attachment-card {
   position: relative;
   display: flex;
-  width: min(500px, 100%);
+  width: min(540px, 100%);
   align-items: stretch;
   overflow: hidden;
-  background: linear-gradient(150deg, #f5f6f3, #f0f2ee);
-  border: 1px solid rgba(39, 56, 49, 0.11);
-  border-radius: 15px;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(39, 103, 244, 0.08), transparent 32%),
+    linear-gradient(150deg, rgba(252, 252, 249, 0.98), rgba(241, 244, 239, 0.98));
+  border: 1px solid rgba(39, 56, 49, 0.13);
+  border-radius: 18px;
+  box-shadow:
+    0 12px 30px rgba(31, 48, 41, 0.07),
+    inset 0 1px rgba(255, 255, 255, 0.85);
 }
 
 .attachment-card.is-compact {
-  width: min(460px, 100%);
-  background: rgba(255, 255, 255, 0.72);
+  width: min(620px, 100%);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(39, 103, 244, 0.07), transparent 34%),
+    rgba(255, 255, 255, 0.78);
 }
 
 .attachment-card__surface {
@@ -1093,8 +1113,8 @@ button:disabled {
   min-width: 0;
   flex: 1;
   flex-direction: column;
-  gap: 9px;
-  padding: 12px 13px;
+  gap: 10px;
+  padding: 14px;
   text-align: left;
   cursor: pointer;
   background: transparent;
@@ -1108,48 +1128,154 @@ button:disabled {
 .attachment-card__heading {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   min-width: 0;
 }
 
 .attachment-card__icon {
   display: grid;
-  width: 30px;
-  height: 30px;
+  width: 36px;
+  height: 36px;
   flex: 0 0 auto;
   place-items: center;
-  color: #1d7757;
-  background: #e3f3ec;
-  border-radius: 9px;
+  color: #155d46;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.72), transparent),
+    #dff3e9;
+  border: 1px solid rgba(31, 135, 96, 0.12);
+  border-radius: 11px;
+  box-shadow: 0 5px 12px rgba(30, 123, 91, 0.08);
 }
 
-.attachment-card__heading > span:last-child {
+.attachment-card__heading > span:nth-child(2) {
   display: flex;
+  flex: 1;
   min-width: 0;
   flex-direction: column;
 }
 
+.attachment-card__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 1px;
+  color: #7b8781;
+  font-size: 7.5px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.attachment-card__received-dot {
+  width: 5px;
+  height: 5px;
+  background: #1aaa72;
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px rgba(26, 170, 114, 0.1);
+}
+
 .attachment-card__heading strong {
   color: #2c3a35;
-  font-size: 11.5px;
-  font-weight: 650;
+  font-size: 13px;
+  font-weight: 680;
+  letter-spacing: -0.01em;
 }
 
 .attachment-card__heading small {
   overflow: hidden;
   color: #8b9490;
-  font-size: 8.5px;
+  font-size: 9px;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.attachment-card__open {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  margin-left: auto;
+  padding: 5px 7px;
+  color: #73807a;
+  font-size: 8.5px;
+  white-space: nowrap;
+  background: rgba(255, 255, 255, 0.62);
+  border: 1px solid rgba(43, 61, 54, 0.08);
+  border-radius: 999px;
+}
+
+.attachment-card__media {
+  position: relative;
+  display: grid;
+  height: 116px;
+  gap: 4px;
+  overflow: hidden;
+  background: #e7ebe7;
+  border-radius: 12px;
+}
+
+.attachment-card__media[data-count="1"] {
+  grid-template-columns: 1fr;
+}
+
+.attachment-card__media[data-count="2"] {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.attachment-card__media[data-count="3"] {
+  grid-template-columns: 1.35fr 1fr;
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+}
+
+.attachment-card__media[data-count="3"] .attachment-card__media-item:first-child {
+  grid-row: 1 / span 2;
+}
+
+.attachment-card__media-item {
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.attachment-card__media-item img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 240ms ease;
+}
+
+.attachment-card__surface:hover .attachment-card__media-item img {
+  transform: scale(1.025);
+}
+
+.attachment-card__media-more {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 7px;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 650;
+  background: rgba(17, 26, 23, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  backdrop-filter: blur(8px);
 }
 
 .attachment-card__lines {
   display: flex;
   flex-direction: column;
-  gap: 3px;
-  color: #646e6a;
+  gap: 4px;
+  padding: 9px 10px;
+  color: #5f6965;
   font-size: 9.5px;
-  line-height: 1.35;
+  line-height: 1.4;
+  background: rgba(255, 255, 255, 0.58);
+  border: 1px solid rgba(46, 63, 56, 0.055);
+  border-radius: 10px;
 }
 
 .attachment-card__lines span {
@@ -1160,29 +1286,61 @@ button:disabled {
 
 .attachment-card__footer {
   display: flex;
-  gap: 10px;
-  color: #97a09c;
+  align-items: center;
+  gap: 12px;
+  color: #7f8985;
   font-size: 8.5px;
+}
+
+.attachment-card__footer span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.attachment-card__size {
+  margin-left: auto;
+  color: #9aa29f;
 }
 
 .attachment-card__remove {
   position: absolute;
-  top: 8px;
-  right: 8px;
+  top: 10px;
+  right: 10px;
   display: grid;
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   place-items: center;
   color: #7d8783;
   cursor: pointer;
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.88);
   border: 1px solid rgba(45, 62, 55, 0.08);
   border-radius: 50%;
+  box-shadow: 0 4px 10px rgba(35, 49, 43, 0.07);
 }
 
 .composer > .attachment-card {
   width: 100%;
-  margin-bottom: 5px;
+  margin-bottom: 7px;
+}
+
+.attachment-card.is-compact .attachment-card__surface {
+  gap: 7px;
+  padding: 11px;
+}
+
+.attachment-card.is-compact .attachment-card__media {
+  height: 78px;
+}
+
+.attachment-card.is-compact .attachment-card__lines {
+  gap: 2px;
+  padding: 6px 8px;
+  font-size: 8.5px;
+}
+
+.attachment-card.is-compact .attachment-card__footer {
+  font-size: 8px;
 }
 
 .signal-rail {

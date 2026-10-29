@@ -20,6 +20,7 @@ def main() -> None:
 
         page.get_by_role("button", name="模拟 Dukou 转发").click()
         page.get_by_test_id("composer").wait_for(state="visible")
+        assert page.locator(".attachment-card__media").is_visible()
         page.get_by_text("转发内容", exact=True).first.click()
         page.get_by_role("dialog").wait_for(state="visible")
         page.wait_for_timeout(350)
@@ -57,6 +58,11 @@ def main() -> None:
                 "已解析 2 条消息", exact=True
             ).wait_for(state="visible")
             upload_page.close()
+
+        desktop_page = browser.new_page(viewport={"width": 1440, "height": 960})
+        desktop_page.goto(f"{demo_url}?desktop=1", wait_until="networkidle")
+        assert desktop_page.locator(".app-shell.is-desktop").count() == 1
+        desktop_page.close()
 
         mobile = browser.new_page(viewport={"width": 390, "height": 844})
         mobile.goto(demo_url, wait_until="networkidle")

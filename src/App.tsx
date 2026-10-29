@@ -56,8 +56,31 @@ interface ToastState {
   tone: "success" | "error";
 }
 
+interface DesktopPasteFile {
+  name: string;
+  type: string;
+  data: string;
+}
+
+interface DesktopBridge {
+  onPasteFiles: (callback: (files: DesktopPasteFile[]) => void) => () => void;
+}
+
 const DEFAULT_PROMPT = "请通读，按时间线总结要点、结论和待办。";
 const SUPPORTED_FILE = /\.(zip|txt|html?|json)$/i;
+const IS_DESKTOP = new URLSearchParams(window.location.search).get("desktop") === "1";
+
+function desktopPasteFileToFile(payload: DesktopPasteFile) {
+  const binary = window.atob(payload.data);
+  const bytes = new Uint8Array(binary.length);
+  for (let index = 0; index < binary.length; index += 1) {
+    bytes[index] = binary.charCodeAt(index);
+  }
+  return new File([bytes], payload.name, {
+    type: payload.type,
+    lastModified: Date.now()
+  });
+}
 
 export default function App() {
   const [attachment, setAttachment] = useState<ChatArchive | null>(null);
@@ -151,6 +174,14 @@ export default function App() {
       window.cancelAnimationFrame(frame);
     };
   }, [focusComposer, receiveFiles]);
+
+  useEffect(() => {
+    const bridge = (window as Window & { dukouDesktop?: DesktopBridge }).dukouDesktop;
+    if (!bridge) return;
+    return bridge.onPasteFiles((files) => {
+      void receiveFiles(files.map(desktopPasteFileToFile));
+    });
+  }, [receiveFiles]);
 
   useEffect(() => {
     const preventFileNavigation = (event: globalThis.DragEvent) => {
@@ -252,10 +283,17 @@ export default function App() {
   const activePreview = submitted?.archive ?? attachment;
   const receivedArchive = attachment ?? submitted?.archive ?? null;
   const hasReceived = receivedArchive !== null;
+  const appClassName = [
+    "app-shell",
+    IS_DESKTOP ? "is-desktop" : "",
+    isDragging ? "is-dragging" : ""
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   return (
     <div
-      className={isDragging ? "app-shell is-dragging" : "app-shell"}
+      className={appClassName}
       onDragOver={onDragOver}
       onDragLeave={onDragLeave}
       onDrop={onDrop}
